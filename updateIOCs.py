@@ -31,7 +31,7 @@ def identify_target_iocs(ioc_location, ioc_prefix, single_ioc):
     for elem in os.listdir(ioc_location):
         if single_ioc == "YES" and os.path.isdir(ioc_location + "/" + elem) and elem == ioc_prefix:
             target_iocs.append(ioc_location + "/" + elem)
-        else if os.path.isdir(ioc_location + "/" + elem) and elem.startswith(ioc_prefix):
+        elif os.path.isdir(ioc_location + "/" + elem) and elem.startswith(ioc_prefix):
             target_iocs.append(ioc_location + "/" + elem)
     return target_iocs
 
