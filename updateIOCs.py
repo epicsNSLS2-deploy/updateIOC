@@ -26,9 +26,9 @@ def identify_target_iocs(ioc_location, ioc_prefix):
 
 def add_support_env_var(unique_fp, bin_location, bin_flat):
     if bin_flat:
-        unique_fp.write('epicEnvSet("SUPPORT_DIR", "{}")\n'.format(bin_location))
+        unique_fp.write('epicsEnvSet("SUPPORT_DIR", "{}")\n'.format(bin_location))
     else:
-        unique_fp.write('epicEnvSet("SUPPORT_DIR", "{}")\n'.format(bin_location + "/support"))
+        unique_fp.write('epicsEnvSet("SUPPORT_DIR", "{}")\n'.format(bin_location + "/support"))
 
 
 
