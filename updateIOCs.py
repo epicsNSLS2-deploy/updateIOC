@@ -8,6 +8,7 @@
 
 import os
 import read_configure
+import fix_ownership
 
 
 # Version Number
@@ -171,7 +172,7 @@ def update_envPaths(ioc_path, bin_flat):
 
 
 # Function called for each IOC to update it to the new format
-def process_ioc_update(ioc_path, bin_location, bin_flat_str):
+def process_ioc_update(ioc_path, bin_location, bin_flat_str, ioc_owner):
     print("---------------------")
     print("Updating IOC {}".format(ioc_path.split('/')[-1]))
     bin_flat = True
@@ -189,6 +190,10 @@ def process_ioc_update(ioc_path, bin_location, bin_flat_str):
     print("Updating envPaths")
     result = update_envPaths(ioc_path, bin_flat)
 
+    print("Fixing IOC ownership and permissions...")
+    fix_ownership.change_ownership(ioc_location, ioc_owner)
+    fix_ownership.change_permissions(ioc_location)
+
 
 
 # Top level function that calls read_configure and then sends the target IOCs
@@ -201,7 +206,7 @@ def update_iocs():
         print("There were no IOCs that fit the specified configuration settings.")
 
     for ioc in target_iocs:
-        process_ioc_update(ioc, configuration["BINARY_LOCATION"], configuration["BINARIES_FLAT"])
+        process_ioc_update(ioc, configuration["BINARY_LOCATION"], configuration["BINARIES_FLAT"], configuration["IOC_OWNER"])
     
     print("Done")
 
