@@ -191,8 +191,8 @@ def process_ioc_update(ioc_path, bin_location, bin_flat_str, ioc_owner):
     result = update_envPaths(ioc_path, bin_flat)
 
     print("Fixing IOC ownership and permissions...")
-    fix_ownership.change_ownership(ioc_location, ioc_owner)
-    fix_ownership.change_permissions(ioc_location)
+    fix_ownership.change_ownership(ioc_path, ioc_owner)
+    fix_ownership.change_permissions(ioc_path)
 
 
 

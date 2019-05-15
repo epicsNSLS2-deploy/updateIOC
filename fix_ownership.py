@@ -8,7 +8,7 @@ import grp
 
 def change_ownership(ioc_location, ioc_owner):
     uid = pwd.getpwnam(ioc_owner).pw_uid
-    gid = grp.getgrpnam(ioc_owner).gr_gid
+    gid = grp.getgrnam(ioc_owner).gr_gid
     if os.path.exists(ioc_location + "/st.cmd"):
         os.chown(ioc_location + "/st.cmd", uid, gid)
     if os.path.exists(ioc_location + "/unique.cmd"):
@@ -18,4 +18,4 @@ def change_ownership(ioc_location, ioc_owner):
 
 def change_permissions(ioc_location):
     if os.path.exists(ioc_location + "/st.cmd"):
-        os.chmod(ioc_location + "/st.cmd", 755)
+        os.chmod(ioc_location + "/st.cmd", 0o755)
