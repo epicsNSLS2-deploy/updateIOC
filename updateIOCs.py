@@ -108,7 +108,7 @@ def update_st(ioc_path, bin_loction, bin_flat):
             else:
                 in_unique = False
                 for elem in unique_file_elems:
-                    if elem in line and "$({})".format(elem) not in line:
+                    if elem in line and "$({})".format(elem) not in line and line.startswith('epicsEnvSet'):
                         in_unique = True
                 if (not in_unique or line.startswith('#')) and "envPaths" not in line and "unique" not in line:
                     new_st.write(line)
