@@ -1,0 +1,16 @@
+#
+# Configuration file for updating IOCs. 
+# Please edit this file before running the script
+#
+
+# Location of all iocs
+IOC_LOCATION=/epics/iocs
+
+# Prefix before every areaDetector IOC to convert
+CAMERA_IOC_PREFIX=cam
+
+# Binary top location
+BINARY_LOCATION=/ad-nfs/epics/prod/Deb7/production
+
+# Binaries flat toggle (Set to yes if base dir is in same dir as areaDetector, false if base and support are together)
+BINARIES_FLAT=YES
