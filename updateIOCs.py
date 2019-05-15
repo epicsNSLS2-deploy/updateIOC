@@ -89,7 +89,42 @@ def update_st(ioc_path, bin_loction, bin_flat):
                     new_st.write("#!{} st.cmd\n".format(bin_loction + "/areaDetector/" + line.strip()[line.index("AD") + len(line.strip()):]))
                 else:
                     new_st.write("#!{} st.cmd\n".format(bin_loction + "/support/areaDetector/" + line.strip()[line.index("AD") + len(line.strip()):]))
+                new_st.write("< unique.cmd\n")
+                new_st.write("< envPaths\n")
+                line_counter += 1
+            else:
+                in_unique = False
+                for elem in unique_file_elems:
+                    if elem in line and "$({})".format(elem) not in line:
+                        in_unique = True
+                if not in_unique or line.startswith('#'):
+                    new_st.write(line)
+            line = old_st.readline()
+        
+        new_st.close()
+        old_st.close()
+        return 0
 
+
+def update_envPaths(ioc_path, bin_flat):
+    if os.path.exists(ioc_path + "/envPaths"):
+        os.rename(ioc_path + "/envPaths", ioc_path + "/envPaths_OLD")
+    new_env = open(ioc_path + "/envPaths", "w+")
+    old_env = open("Examples/envPaths", "r+")
+
+    line = old_env.readline()
+    while line:
+        if "EPICS_BASE" in line:
+            if bin_flat:
+                new_env.write(line)
+            else:
+                new_env.write('epicsEnvSet("EPICS_BASE", "$(SUPPORT_DIR)/../base"')
+        else:
+            new_env.write(line)
+        line = old_env.readline()
+        
+    old_env.close()
+    new_env.close()
 
 def process_ioc_update(ioc_path, bin_location, bin_flat_str):
     print("---------------------")
@@ -103,7 +138,7 @@ def process_ioc_update(ioc_path, bin_location, bin_flat_str):
     print("Updating st.cmd")
     update_st(ioc_path, bin_location, bin_flat)
     print("Updating envPaths")
-    update_envPaths(bin_flat)
+    update_envPaths(ioc_path, bin_flat)
     
 
 
