@@ -19,6 +19,7 @@ def read_config():
         
         line = config_file.readline()
     
+    config_file.close()
     print("CONFIGURE file read with the following values:")
     print(result)
     return result
