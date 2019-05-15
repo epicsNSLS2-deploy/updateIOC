@@ -1,0 +1,35 @@
+epicsEnvSet("ARCH",	"linux-x86_64")
+#epicsEnvSet("IOC",      "iocADProsilica")
+epicsEnvSet("TOP",	"${PWD}")	# defined here not in  unique.cmd
+epicsEnvSet("SUPPORT", 	"$(SUPPORT_DIR)")
+
+epicsEnvSet("ASYN", 	   "$(SUPPORT)/asyn")
+epicsEnvSet("AUTOSAVE",    "$(SUPPORT)/autosave")
+epicsEnvSet("BUSY", 	   "$(SUPPORT)/busy")
+epicsEnvSet("CALC", 	   "$(SUPPORT)/calc")
+epicsEnvSet("SNCSEQ", 	   "$(SUPPORT)/seq")
+epicsEnvSet("SSCAN", 	   "$(SUPPORT)/sscan")
+epicsEnvSet("DEVIOCSTATS", "$(SUPPORT)/iocStats")
+
+# This line will change depending on if the binaries are flat or not
+epicsEnvSet("EPICS_BASE",  "$(SUPPORT)/base")
+
+epicsEnvSet("AREA_DETECTOR",  "$(SUPPORT)/areaDetector")
+epicsEnvSet("ADSUPPORT",      "$(AREA_DETECTOR)/ADSupport")
+epicsEnvSet("ADCORE", 	      "$(AREA_DETECTOR)/ADCore")
+epicsEnvSet("ADPLUGINBAR",    "$(AREA_DETECTOR)/ADPluginBar")
+epicsEnvSet("ADPLUGINEDGE",   "$(AREA_DETECTOR)/ADPluginEdge")
+epicsEnvSet("ADCOMPVISION",   "$(AREA_DETECTOR)/ADCompVision")
+epicsEnvSet("ADPLUGINDMTX",   "$(AREA_DETECTOR)/ADPluginDmtx")
+
+epicsEnvSet("EPICS_DB_INCLUDE_PATH", "$(ADCORE)/db")
+
+epicsEnvSet("ADPROSILICA",    "$(AREA_DETECTOR)/ADProsilica")
+epicsEnvSet("ADSIMDETECTOR",  "$(AREA_DETECTOR)/ADSimDetector")
+epicsEnvSet("ADLAMBDA",       "$(AREA_DETECTOR)/ADLambda")
+epicsEnvSet("ADPILATUS",      "$(AREA_DETECTOR)/ADPilatus")
+epicsEnvSet("ADMERLIN",       "$(AREA_DETECTOR)/ADMerlin")
+epicsEnvSet("ADEIGER",        "$(AREA_DETECTOR)/ADEiger")
+epicsEnvSet("ADANDOR3",       "$(AREA_DETECTOR)/ADAndor3")
+epicsEnvSet("ADPOINTGREY",    "$(AREA_DETECTOR)/ADPointGrey")
+epicsEnvSet("ADUVC", "$(AREA_DETECTOR)/ADUVC")
