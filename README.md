@@ -39,3 +39,7 @@ python3 updateIOCs.py
 Note that sudo may be required in order to run the script if the `IOC_LOCATION` is set to a dir that is not owned by the user running the script.
 
 You should now have reorganized IOCs!
+
+### Usage notes
+
+When using the script with iocs created with areaDetector 1-9-1, there is an issue with identifying the correct binary location in st.cmd. The reason for this is that the script identifies the camera type by reading the existing st.cmd file and finding the name of the driver, ex: `ADProsilica`. In areaDetector 1-9-1, all drivers were built into one `bin/` directory, and thus the driver cannot be identified. 
