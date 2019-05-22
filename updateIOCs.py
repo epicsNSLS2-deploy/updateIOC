@@ -12,7 +12,7 @@ import fix_ownership
 
 
 # Version Number
-version = "v0.0.1"
+version = "v0.0.2"
 
 
 # EPICS environment variables that are defined in the unique.cmd file rather than in st.cmd or envPaths
@@ -161,7 +161,7 @@ def update_envPaths(ioc_path, bin_flat):
             if bin_flat:
                 new_env.write(line)
             else:
-                new_env.write('epicsEnvSet("EPICS_BASE", "$(SUPPORT_DIR)/../base")')
+                new_env.write('epicsEnvSet("EPICS_BASE", "$(SUPPORT_DIR)/../base")\n')
         else:
             new_env.write(line)
         line = old_env.readline()
