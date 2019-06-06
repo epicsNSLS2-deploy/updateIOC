@@ -20,13 +20,13 @@ To use updateIOC, there are several configuration options, which are edited in t
 Option  |   Description
 -------|----------------
 IOC_LOCATION | Dir containting all iocs (usually `/epics/iocs`)
-CAMERA_IOC_PREFIX | Prefix for directories contiainging AreaDetector IOCs (`cam` or `det`)
+CAMERA_IOC_PREFIX | Prefix for directories contiaining AreaDetector IOCs (`cam` or `det`)
 BINARY_LOCATION | Path to precompiled binaries
 BINARIES_FLAT | `YES` or `NO`, if base is in same dir as synApps modules set to `YES` otherwise `NO`
 IOC_OWNER | Set this to the desired owner of all IOC files (ex. `softioc`)
 SINGLE_IOC | If set to yes, the script will attempt to match an IOC directly with prefix, and only convert that IOC
 
-In order to use the module, set up the `CONFIGURATION` file with the correct parameters. In order to target an individual IOC rather than the entire directory, set the `CAMERA_IOC_PREFIX` simply to the IOC name itself. 
+In order to use the module, set up the `CONFIGURATION` file with the correct parameters. In order to target an individual IOC rather than the entire directory, set the `SINGLE_IOC` option to `YES`.
 
 To run the script, navigate to the `updateIOC` directory that contains it, and type either
 ```
