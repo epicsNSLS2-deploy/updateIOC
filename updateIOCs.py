@@ -7,6 +7,7 @@
 
 
 import os
+import argparse
 import read_configure
 import fix_ownership
 
@@ -75,7 +76,7 @@ def create_unique_from_st(ioc_path, bin_location, bin_flat):
 
 
 # Function that updates the unique file given an old unique file
-def update_unique(ioc_path, bin_location, bin_flat):
+def update_unique(ioc_path, bin_location, bin_flat, preserve_old):
     if os.path.exists(ioc_path + "/unique.cmd"):
         print("unique.cmd exits, using it as template.")
         found_support_set = False
@@ -95,6 +96,8 @@ def update_unique(ioc_path, bin_location, bin_flat):
             add_support_env_var(new_unique_file, bin_location, bin_flat)
         old_unique_file.close()
         new_unique_file.close()
+        if not preserve_old:
+            os.remove(ioc_path + "/unique_OLD.cmd")
         return 0
     else:
         print("unique.cmd does not exist, attempting to build it from st.cmd")
@@ -104,7 +107,7 @@ def update_unique(ioc_path, bin_location, bin_flat):
 
 
 # Function that updates st.cmd into the new format
-def update_st(ioc_path, bin_loction, bin_flat):
+def update_st(ioc_path, bin_loction, bin_flat, preserve_old):
     if os.path.exists(ioc_path + "/st.cmd"):
         os.rename(ioc_path + "/st.cmd", ioc_path + "/st_OLD.cmd")
         old_st = open(ioc_path + "/st_OLD.cmd", "r+")
@@ -141,6 +144,8 @@ def update_st(ioc_path, bin_loction, bin_flat):
         
         new_st.close()
         old_st.close()
+        if not preserve_old:
+            os.remove(ioc_path + "/st_OLD.cmd")
         return 0
     else:
         print("Error processing {}, no st.cmd file identified".format(ioc_path.split('/')[-1]))
@@ -149,7 +154,7 @@ def update_st(ioc_path, bin_loction, bin_flat):
 
 
 # Function that copies envPaths, checking if the env var for base is correct (Flat or not flat support dir)
-def update_envPaths(ioc_path, bin_flat):
+def update_envPaths(ioc_path, bin_flat, preserve_old):
     if os.path.exists(ioc_path + "/envPaths"):
         os.rename(ioc_path + "/envPaths", ioc_path + "/envPaths_OLD")
     new_env = open(ioc_path + "/envPaths", "w+")
@@ -168,11 +173,12 @@ def update_envPaths(ioc_path, bin_flat):
         
     old_env.close()
     new_env.close()
-
+    if not preserve_old:
+        os.remove(ioc_path + "/envPaths_OLD")
 
 
 # Function called for each IOC to update it to the new format
-def process_ioc_update(ioc_path, bin_location, bin_flat_str, ioc_owner):
+def process_ioc_update(ioc_path, bin_location, bin_flat_str, ioc_owner, preserve_old):
     print("---------------------")
     print("Updating IOC {}".format(ioc_path.split('/')[-1]))
     bin_flat = True
@@ -180,15 +186,15 @@ def process_ioc_update(ioc_path, bin_location, bin_flat_str, ioc_owner):
         bin_flat = False
 
     print("Updating unique file")
-    result = update_unique(ioc_path, bin_location, bin_flat)
+    result = update_unique(ioc_path, bin_location, bin_flat, preserve_old)
     if result != 0:
         return
     print("Updating st.cmd")
-    result = update_st(ioc_path, bin_location, bin_flat)
+    result = update_st(ioc_path, bin_location, bin_flat, preserve_old)
     if result != 0:
         return
     print("Updating envPaths")
-    result = update_envPaths(ioc_path, bin_flat)
+    result = update_envPaths(ioc_path, bin_flat, preserve_old)
 
     print("Fixing IOC ownership and permissions...")
     fix_ownership.change_ownership(ioc_path, ioc_owner)
@@ -197,18 +203,47 @@ def process_ioc_update(ioc_path, bin_location, bin_flat_str, ioc_owner):
 
 
 # Top level function that calls read_configure and then sends the target IOCs
-def update_iocs():
+def update_iocs(parsed_config, preserve_old):
     print("-----------------------")
     print("Welcome to updateIOCs version {}".format(version))
     configuration = read_configure.read_config()
+    for key in parsed_config.keys():
+        configuration[key] = parsed_config[key]
     target_iocs = identify_target_iocs(configuration["IOC_LOCATION"], configuration["CAMERA_IOC_PREFIX"], configuration["SINGLE_IOC"])
     if len(target_iocs) == 0:
         print("There were no IOCs that fit the specified configuration settings.")
 
     for ioc in target_iocs:
-        process_ioc_update(ioc, configuration["BINARY_LOCATION"], configuration["BINARIES_FLAT"], configuration["IOC_OWNER"])
+        process_ioc_update(ioc, configuration["BINARY_LOCATION"], configuration["BINARIES_FLAT"], configuration["IOC_OWNER"], preserve_old)
     
     print("Done")
 
 
-update_iocs()
+def parse_args():
+    parser = argparse.ArgumentParser(description="A python utility for repointing areaDetector IOCs to new binaries.")
+    parser.add_argument('-o', '--preserveold', action='store_true', help='Add this flag to retain copies of old IOC files.')
+    parser.add_argument('-l', '--location', help='The target IOC directory. Usually /epics/iocs')
+    parser.add_argument('-p', '--prefix', help='The prefix to search for IOCs with. Usually cam- for areaDetector IOCs.')
+    parser.add_argument('-b', '--binaryloc', help='The location of the new binaries')
+    parser.add_argument('-n', '--nonflat', action='store_true', help='Flag to determine flatness of binaries. If using a bundle, do not add this flag.')
+    parser.add_argument('-s', '--singleioc', action='store_true', help='Flag to only update IOC that has a name exactly matching the prefix.')
+    parser.add_argument('-f', '--fileowner', help='The account that should own the IOC after script completion. Usually softioc.')
+    arguments = vars(parser.parse_args())
+    parsed_config = {}
+    if arguments['location'] is not None:
+        parsed_config['IOC_LOCATION'] = arguments['location']
+    if arguments['prefix'] is not None:
+        parsed_config['CAMERA_IOC_PREFIX'] = arguments['prefix']
+    if arguments['binaryloc'] is not None:
+        parsed_config['BINARY_LOCATION'] = arguments['binaryloc']
+    if arguments['fileowner'] is not None:
+        parsed_config['IOC_OWNER'] = arguments['fileowner']
+    if arguments['nonflat']:
+        parsed_config['BINARIES_FLAT'] = 'NO'
+    if arguments['singleioc']:
+        parsed_config['SINGLE_IOC'] = 'YES'
+
+    update_iocs(parsed_config, arguments['preserveold'])
+
+
+parse_args()
